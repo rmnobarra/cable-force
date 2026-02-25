@@ -32,6 +32,7 @@ kubectl apply -f infra/redis.yaml
 kubectl apply -f infra/deployment.yaml
 kubectl apply -f infra/gateway.yaml
 kubectl apply -f infra/httproute.yaml
+kubectl apply -f infra/backend-policy.yaml
 
 echo "🔧 Patching Envoy Service for Kind compatibility (NodePort)..."
 # We wait for the service to be created by the controller
