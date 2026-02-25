@@ -15,11 +15,12 @@ services:
     command: npm run dev
 
   frontend:
-    image: nginx:alpine
-    volumes:
-      - ./client:/usr/share/nginx/html
+    build:
+      context: ./client
     ports:
       - "8080:80"
+    depends_on:
+      - backend
 
   redis:
     image: redis:alpine
