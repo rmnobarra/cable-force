@@ -13,9 +13,11 @@ export class LobbyScene extends Phaser.Scene {
 
         if (!this.socket) {
             const host = window.location.hostname;
-            const port = '3000';
-            console.log(`Connecting to socket at http://${host}:${port}`);
-            this.socket = io(`http://${host}:${port}`);
+            // If we are on port 80 (standard), don't append a port.
+            // Otherwise, if we are on another port (like 3000 in dev), use that.
+            const url = window.location.port ? `${window.location.protocol}//${host}:${window.location.port}` : `${window.location.protocol}//${host}`;
+            console.log(`Connecting to socket at ${url}`);
+            this.socket = io(url, { transports: ['websocket', 'polling'] });
         }
 
         this.socket.emit('joinGame');

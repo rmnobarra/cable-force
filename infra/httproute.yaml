@@ -1,0 +1,28 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: cable-force-route
+  namespace: default
+spec:
+  parentRefs:
+  - name: cable-force-gateway
+  hostnames:
+  - "cableforce.127.0.0.1.nip.io"
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /socket.io
+    backendRefs:
+    - name: backend
+      port: 3000
+    # Note: Gateway API handles WebSockets natively.
+    # For Sticky Sessions (Session Persistence), most controllers like Envoy 
+    # use a BackendTrafficPolicy or similar extension. 
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: frontend
+      port: 80
