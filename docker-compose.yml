@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ./server
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PORT=3000
+    depends_on:
+      - redis
+    command: npm run dev
+
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./client:/usr/share/nginx/html
+    ports:
+      - "8080:80"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
