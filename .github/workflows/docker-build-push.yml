@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Images
 
 on:
   push:
@@ -7,12 +7,18 @@ on:
     branches: [ "main", "develop" ]
   workflow_dispatch:
 
-env:
-  DOCKER_IMAGE: rmnobarra/cable-force
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - context: ./server
+            image: rmnobarra/cable-force-backend
+            name: backend
+          - context: ./client
+            image: rmnobarra/cable-force-frontend
+            name: frontend
     
     steps:
       - name: Checkout code
@@ -31,7 +37,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.DOCKER_IMAGE }}
+          images: ${{ matrix.image }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -40,10 +46,10 @@ jobs:
             type=sha,prefix=sha-
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push Docker image
+      - name: Build and push ${{ matrix.name }} Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./server
+          context: ${{ matrix.context }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -51,5 +57,5 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
 
-      - name: Image digest
+      - name: Image digest for ${{ matrix.name }}
         run: echo "Image pushed with digest ${{ steps.meta.outputs.digest }}"

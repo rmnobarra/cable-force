@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: backend
-        image: cable-force-backend:latest
+        image: rmnobarra/cable-force-backend:main
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:
@@ -63,7 +64,7 @@ kind: Deployment
 metadata:
   name: frontend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: frontend
@@ -74,7 +75,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: nginx:alpine
+        image: rmnobarra/cable-force-frontend:main
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
 ---
@@ -85,5 +87,6 @@ metadata:
 spec:
   ports:
   - port: 80
+    targetPort: 80
   selector:
     app: frontend
