@@ -28,6 +28,14 @@ Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
     console.error("Redis connection error:", err);
 });
 
+app.get('/health', (req, res) => {
+    if (pubClient.isOpen) {
+        res.status(200).json({ status: 'ok' });
+    } else {
+        res.status(503).json({ status: 'error', message: 'Redis not connected' });
+    }
+});
+
 io.on('connection', (socket) => {
     console.log('a user connected:', socket.id);
 
